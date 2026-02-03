@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useVoting } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { DAYS, MAIN_MENU, RAMADAN_MENU } from "@/lib/data"; // Updated import
 import { MealType, LogicalMenu } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Check, ArrowRight, ArrowLeft, Utensils, AlertCircle } from "lucide-react";
-import { UserForm } from "@/components/UserForm";
+// Removed UserForm import as we redirect to /verify now
 
 export default function VotingPage() {
     const { user, phase, setPhase, addVote, getVote } = useVoting();
@@ -17,12 +17,16 @@ export default function VotingPage() {
     const [currentStep, setCurrentStep] = useState(0);
     const [currentDayIndex, setCurrentDayIndex] = useState(0);
 
+    // Redirect to verification if no user found
+    useEffect(() => {
+        if (!user) {
+            router.replace("/verify");
+        }
+    }, [user, router]);
+
+    // Don't render anything if redirecting
     if (!user) {
-        return (
-            <div className="min-h-screen flex items-center justify-center p-6 bg-obsidian">
-                <UserForm />
-            </div>
-        );
+        return null;
     }
 
     const currentDay = DAYS[currentDayIndex];

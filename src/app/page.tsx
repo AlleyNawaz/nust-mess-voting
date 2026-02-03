@@ -3,13 +3,13 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Utensils, Moon } from "lucide-react";
-import Image from "next/image";
 
 export default function Home() {
   const router = useRouter();
 
   const handleStart = () => {
-    router.push("/vote");
+    console.log("Start Voting clicked"); // Debug log for verification
+    router.push("/verify");
   };
 
   return (
@@ -84,6 +84,7 @@ export default function Home() {
         {/* 4. CTA Button */}
         <div className="pt-8 flex flex-col items-center gap-4 w-full">
           <Button
+            type="button" // MANDATORY: Explicitly set type button to avoid form issues
             onClick={handleStart}
             className="w-full md:w-auto min-w-[240px] h-14 bg-white hover:bg-indigo-50 text-indigo-950 font-bold text-lg rounded-xl shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:scale-105 transition-all duration-300"
           >

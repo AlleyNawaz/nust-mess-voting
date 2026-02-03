@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useVoting } from "@/lib/store";
+import { useRouter } from "next/navigation";
 
 const userSchema = z.object({
     fullName: z.string().min(3, "Name must be at least 3 characters"),
@@ -15,24 +16,10 @@ const userSchema = z.object({
     email: z.string().email().refine((val) => {
         const lower = val.toLowerCase();
         // Allow ONLY @student.nust.edu.pk or @nust.edu.pk
-        // Explicitly BLOCK @seecs.edu.pk or other subdomains if not student.nust
         const isStudent = lower.endsWith("@student.nust.edu.pk");
         const isOfficial = lower.endsWith("@nust.edu.pk");
-        const isDepartmental = lower.endsWith("@seecs.edu.pk") || (lower.split('@')[1] !== "nust.edu.pk" && lower.split('@')[1] !== "student.nust.edu.pk");
-
-        // Logic:
-        // Must end with student.nust.edu.pk OR nust.edu.pk
-        // AND must NOT fail the specific exclusions for departmental emails if they are considered invalid
-        // The user said: "Validation rules to enforce: Email must end with: @student.nust.edu.pk, @nust.edu.pk, @seecs.edu.pk"
-        // BUT ALSO said: "Do NOT: Accept department-based emails like @seecs.edu.pk"
-
-        // Strict Interpretation:
-        // Pass if: ends with "@student.nust.edu.pk" OR "@nust.edu.pk"
-        // Fail if: ends with "@seecs.edu.pk" (even if it matches nust.edu.pk technically, though it doesn't match the exact strings above)
-
-        // Wait, "seecs.edu.pk" does NOT end with "nust.edu.pk".
-
-        return isStudent || (isOfficial && !val.includes("@seecs.edu.pk"));
+        // Reject purely departmental domains unless sub of nust.edu.pk
+        return (isStudent || isOfficial) && !val.includes("@seecs.edu.pk");
     }, {
         message: "Please use your official NUST student email (...@student.nust.edu.pk)",
     }),
@@ -42,6 +29,7 @@ type UserFormData = z.infer<typeof userSchema>;
 
 export function UserForm() {
     const { setUser } = useVoting();
+    const router = useRouter();
 
     const {
         register,
@@ -53,6 +41,8 @@ export function UserForm() {
 
     const onSubmit = (data: UserFormData) => {
         setUser(data);
+        // FORCE Navigation to voting page after verification
+        router.push("/vote");
     };
 
     return (

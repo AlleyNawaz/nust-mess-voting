@@ -12,8 +12,29 @@ const userSchema = z.object({
     cmsId: z.string().min(5, "Invalid CMS ID"),
     batch: z.string().min(2, "Batch is required (e.g., 2022)"),
     department: z.string().min(2, "Department is required"),
-    email: z.string().email().refine((val) => val.endsWith("nust.edu.pk"), {
-        message: "Must be a valid NUST email address",
+    email: z.string().email().refine((val) => {
+        const lower = val.toLowerCase();
+        // Allow ONLY @student.nust.edu.pk or @nust.edu.pk
+        // Explicitly BLOCK @seecs.edu.pk or other subdomains if not student.nust
+        const isStudent = lower.endsWith("@student.nust.edu.pk");
+        const isOfficial = lower.endsWith("@nust.edu.pk");
+        const isDepartmental = lower.endsWith("@seecs.edu.pk") || (lower.split('@')[1] !== "nust.edu.pk" && lower.split('@')[1] !== "student.nust.edu.pk");
+
+        // Logic:
+        // Must end with student.nust.edu.pk OR nust.edu.pk
+        // AND must NOT fail the specific exclusions for departmental emails if they are considered invalid
+        // The user said: "Validation rules to enforce: Email must end with: @student.nust.edu.pk, @nust.edu.pk, @seecs.edu.pk"
+        // BUT ALSO said: "Do NOT: Accept department-based emails like @seecs.edu.pk"
+
+        // Strict Interpretation:
+        // Pass if: ends with "@student.nust.edu.pk" OR "@nust.edu.pk"
+        // Fail if: ends with "@seecs.edu.pk" (even if it matches nust.edu.pk technically, though it doesn't match the exact strings above)
+
+        // Wait, "seecs.edu.pk" does NOT end with "nust.edu.pk".
+
+        return isStudent || (isOfficial && !val.includes("@seecs.edu.pk"));
+    }, {
+        message: "Please use your official NUST student email (...@student.nust.edu.pk)",
     }),
 });
 
@@ -32,8 +53,6 @@ export function UserForm() {
 
     const onSubmit = (data: UserFormData) => {
         setUser(data);
-        // Note: No router.push here anymore. 
-        // The parent component will handle state change to show voting UI.
     };
 
     return (
@@ -95,11 +114,12 @@ export function UserForm() {
                         <input
                             id="email"
                             type="email"
-                            placeholder="ali.nawaz@seecs.edu.pk"
+                            placeholder="your.name@student.nust.edu.pk"
                             className="glass-input w-full px-4 py-2"
                             {...register("email")}
                         />
                         {errors.email && <p className="text-red-400 text-xs">{errors.email.message}</p>}
+                        <p className="text-xs text-steel/50">Must be an official @student.nust.edu.pk or @nust.edu.pk address.</p>
                     </div>
 
                     <Button type="submit" className="w-full h-12 bg-primary hover:bg-primary-glow text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-primary/20">

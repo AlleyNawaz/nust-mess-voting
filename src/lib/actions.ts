@@ -14,7 +14,6 @@ export async function submitVotes(payload: SubmissionPayload) {
     // 1. Env Check
     if (!SCRIPT_URL) {
         console.error("Critical: Google Script URL is missing in environment variables.");
-        // Returns generic error to UI
         return { success: false, message: "Submission service is temporarily unavailable. Please try again later." };
     }
 
@@ -23,9 +22,20 @@ export async function submitVotes(payload: SubmissionPayload) {
         return { success: false, message: "Student data is incomplete." };
     }
 
-    // Domain Check
-    if (!payload.user.email.endsWith("nust.edu.pk")) {
-        return { success: false, message: "Invalid Email Domain. Must be @nust.edu.pk" };
+    // Domain Check (Strict)
+    const email = payload.user.email.toLowerCase();
+    const isStudent = email.endsWith("@student.nust.edu.pk");
+    const isOfficial = email.endsWith("@nust.edu.pk");
+    // Explicitly reject purely departmental domains unless they are subdomains of nust.edu.pk (logic handled by endsWith)
+    // But reject "seecs.edu.pk" (without nust) or other variants if any.
+    // However, the rule "Do NOT accept department-based emails like @seecs.edu.pk" means specifically block that.
+
+    // Valid: "ali@student.nust.edu.pk", "staff@nust.edu.pk"
+    // Invalid: "ali@seecs.edu.pk"
+    const isValid = (isStudent || isOfficial) && !email.includes("@seecs.edu.pk");
+
+    if (!isValid) {
+        return { success: false, message: "Please use your official NUST student email (...@student.nust.edu.pk)" };
     }
 
     // Vote Check
@@ -40,7 +50,6 @@ export async function submitVotes(payload: SubmissionPayload) {
             headers: {
                 "Content-Type": "application/json",
             },
-            // Keeping structure compatible with the deployed script
             body: JSON.stringify(payload),
         });
 
@@ -50,9 +59,6 @@ export async function submitVotes(payload: SubmissionPayload) {
             return { success: true };
         } else {
             console.error("Script Error:", result.message);
-            // Even if script returns error (e.g. duplicate), show it IF it's user-facing safelisted, 
-            // otherwise show generic. 
-            // The script currently returns "You have already voted..." which is safe to show.
             return { success: false, message: result.message || "Submission service is temporarily unavailable. Please try again later." };
         }
 

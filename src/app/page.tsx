@@ -1,21 +1,26 @@
-import Link from "next/link";
+"use client";
+
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Utensils, Moon } from "lucide-react";
 import Image from "next/image";
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleStart = () => {
+    router.push("/vote");
+  };
+
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center p-6 text-center overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center relative overflow-hidden text-center selection:bg-indigo-500/30">
 
-      {/* Background Ambient Effects */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/20 blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
-      <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-midnight/40 blur-[150px] rounded-full pointer-events-none" />
+      {/* 1. Header Section */}
+      <header className="w-full max-w-5xl mx-auto p-6 flex flex-col md:flex-row items-center justify-center md:justify-between py-12 md:py-16 gap-6 z-10">
 
-      <div className="relative z-10 max-w-3xl space-y-10 flex flex-col items-center">
-
-        {/* Logo and Title */}
-        <div className="space-y-6 flex flex-col items-center">
-          <div className="relative w-24 h-24 mb-2 drop-shadow-[0_0_30px_rgba(255,255,255,0.15)]">
+        {/* Logo Lockup */}
+        <div className="flex items-center gap-4">
+          <div className="relative w-16 h-16 drop-shadow-[0_0_25px_rgba(255,255,255,0.1)]">
             <Image
               src="/nustLogo.png"
               alt="NUST Logo"
@@ -24,56 +29,92 @@ export default function Home() {
               priority
             />
           </div>
+          <div className="text-left hidden md:block">
+            <h2 className="text-xl font-bold text-white leading-none tracking-tight">NUST Hostels</h2>
+            <p className="text-sm text-indigo-200/60 font-medium tracking-wide uppercase">Mess Committee</p>
+          </div>
+        </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]">
-            NUST Mess Menu <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-steel">Voting 2026</span>
+        {/* Title (Mobile Centered / Desktop Right Aligned) */}
+        <div className="text-center md:text-right">
+          <span className="inline-block py-1 px-3 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-[10px] font-bold tracking-widest uppercase mb-2">
+            Official Portal
+          </span>
+          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+            Mess Menu Voting <span className="text-indigo-400">2026</span>
           </h1>
+        </div>
+      </header>
 
-          <p className="text-lg md:text-xl text-steel max-w-2xl mx-auto leading-relaxed">
-            Welcome to the annual decision process for the hostel mess.
-            Your vote determines the Regular and Ramadan menus for the entire upcoming year.
+
+      {/* Main Content */}
+      <main className="flex-1 w-full max-w-4xl px-6 pb-20 z-10 flex flex-col items-center gap-8">
+
+        {/* 2. Intro Card (Glassmorphism) */}
+        <div className="glass-card w-full p-8 md:p-10 rounded-3xl text-left relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none" />
+
+          <h3 className="text-xl font-semibold text-white mb-3 relative z-10">Welcome, Student.</h3>
+          <p className="text-lg text-indigo-100/80 leading-relaxed max-w-2xl relative z-10">
+            This is the official annual voting portal for NUST hostels.
+            Your vote directly decides the <span className="text-white font-medium">Regular</span> and <span className="text-white font-medium">Ramadan</span> mess menus for 2026.
+            Please vote responsibly.
           </p>
         </div>
 
-        {/* Steps / Info Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left w-full">
-          <div className="glass-card p-6 rounded-2xl hover:border-primary/30 transition-colors">
-            <div className="w-10 h-10 rounded-full bg-charcoal flex items-center justify-center mb-4 border border-white/10">
-              <Utensils className="w-5 h-5 text-primary" />
+
+        {/* 3. Phase Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+          {/* Phase 1 */}
+          <div className="bg-white/5 border border-white/5 p-6 rounded-2xl text-left flex flex-col gap-3 hover:bg-white/10 transition-colors cursor-default">
+            <div className="w-10 h-10 rounded-full bg-indigo-950/50 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+              <Utensils className="w-5 h-5" />
             </div>
-            <h3 className="text-white text-lg font-semibold mb-2">Phase 1: Regular Menu</h3>
-            <p className="text-steel text-sm leading-relaxed">
-              Vote for daily Breakfast, Lunch, and Dinner options.
-              One selection per meal is allowed.
-            </p>
+            <div>
+              <h4 className="text-white font-semibold flex items-center gap-2">
+                Phase 1: Regular Menu
+              </h4>
+              <p className="text-sm text-slate-400 mt-1">
+                Breakfast → Lunch → Dinner (Weekly)
+              </p>
+            </div>
           </div>
 
-          <div className="glass-card p-6 rounded-2xl hover:border-primary/30 transition-colors">
-            <div className="w-10 h-10 rounded-full bg-charcoal flex items-center justify-center mb-4 border border-white/10">
-              <Moon className="w-5 h-5 text-primary" />
+          {/* Phase 2 */}
+          <div className="bg-white/5 border border-white/5 p-6 rounded-2xl text-left flex flex-col gap-3 hover:bg-white/10 transition-colors cursor-default">
+            <div className="w-10 h-10 rounded-full bg-indigo-950/50 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+              <Moon className="w-5 h-5" />
             </div>
-            <h3 className="text-white text-lg font-semibold mb-2">Phase 2: Ramadan Menu</h3>
-            <p className="text-steel text-sm leading-relaxed">
-              After regular menu, proceed to select Sehri and Iftari options
-              for the Holy Month.
-            </p>
+            <div>
+              <h4 className="text-white font-semibold flex items-center gap-2">
+                Phase 2: Ramadan Menu
+              </h4>
+              <p className="text-sm text-slate-400 mt-1">
+                Sehri → Iftari → Dinner (Weekly)
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="pt-8">
-          <Link href="/vote">
-            <Button size="lg" className="bg-white text-obsidian hover:bg-mist h-14 px-10 rounded-full text-lg font-bold shadow-[0_0_20px_rgba(255,255,255,0.15)] transition-transform hover:scale-105">
-              Start Voting
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          </Link>
-          <p className="mt-4 text-xs text-steel/60">
-            Only verified NUST students can participate.
+
+        {/* 4. CTA Button */}
+        <div className="pt-8 flex flex-col items-center gap-4 w-full">
+          <Button
+            onClick={handleStart}
+            className="w-full md:w-auto min-w-[240px] h-14 bg-white hover:bg-indigo-50 text-indigo-950 font-bold text-lg rounded-xl shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:scale-105 transition-all duration-300"
+          >
+            Start Voting
+            <ArrowRight className="ml-2 w-5 h-5" />
+          </Button>
+
+          {/* 5. Footer Note */}
+          <p className="text-xs text-slate-500 font-medium tracking-wide uppercase">
+            Only verified NUST students can participate
           </p>
         </div>
 
-      </div>
+      </main>
+
     </div>
   );
 }

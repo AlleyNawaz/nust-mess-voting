@@ -9,19 +9,25 @@
 
 @layer base {
   body {
-    background-color: var(--background);
+    /* Deep Charcoal (#0B0B0F) -> Purple/Indigo Gradient */
+    background: radial-gradient(circle at 50% -20%, #2e1065, #0f172a, #020617);
     color: var(--foreground);
-    @apply antialiased font-sans selection:bg-primary/30 selection:text-white;
+    min-height: 100vh;
+    @apply antialiased font-sans selection:bg-indigo-500/30 selection:text-white;
   }
 }
 
 /* Glassmorphism Utility */
 @layer utilities {
   .glass-card {
-    @apply bg-charcoal/40 backdrop-blur-xl border border-white/5 shadow-2xl;
+    @apply bg-white/5 backdrop-blur-2xl border border-white/10 shadow-2xl;
   }
 
-  .glass-input {
-    @apply bg-white/5 border border-white/10 rounded-lg text-mist placeholder:text-steel focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all;
+  .glass-panel {
+    @apply bg-[#0B0B0F]/60 backdrop-blur-xl border border-white/5;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
   }
 }

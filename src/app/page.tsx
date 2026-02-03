@@ -15,40 +15,24 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center relative overflow-hidden text-center selection:bg-indigo-500/30">
 
-      {/* 1. Header Section */}
-      <header className="w-full max-w-5xl mx-auto p-6 flex flex-col md:flex-row items-center justify-center md:justify-between py-12 md:py-16 gap-6 z-10">
+      {/* 
+          1. Header Section Removed 
+          Globally handled by src/components/layout/Header.tsx
+      */}
 
-        {/* Logo Lockup */}
-        <div className="flex items-center gap-4">
-          <div className="relative w-16 h-16 drop-shadow-[0_0_25px_rgba(255,255,255,0.1)]">
-            <Image
-              src="/nustLogo.png"
-              alt="NUST Logo"
-              fill
-              className="object-contain"
-              priority
-            />
-          </div>
-          <div className="text-left hidden md:block">
-            <h2 className="text-xl font-bold text-white leading-none tracking-tight">NUST Hostels</h2>
-            <p className="text-sm text-indigo-200/60 font-medium tracking-wide uppercase">Mess Committee</p>
-          </div>
-        </div>
 
-        {/* Title (Mobile Centered / Desktop Right Aligned) */}
-        <div className="text-center md:text-right">
+      {/* Main Content - Added Top Padding for spacing from fixed header */}
+      <main className="flex-1 w-full max-w-4xl px-6 py-20 z-10 flex flex-col items-center gap-8">
+
+        {/* Title Section (Moved from Header) */}
+        <div className="text-center space-y-4 mb-4">
           <span className="inline-block py-1 px-3 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-[10px] font-bold tracking-widest uppercase mb-2">
             Official Portal
           </span>
-          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+          <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
             Mess Menu Voting <span className="text-indigo-400">2026</span>
           </h1>
         </div>
-      </header>
-
-
-      {/* Main Content */}
-      <main className="flex-1 w-full max-w-4xl px-6 pb-20 z-10 flex flex-col items-center gap-8">
 
         {/* 2. Intro Card (Glassmorphism) */}
         <div className="glass-card w-full p-8 md:p-10 rounded-3xl text-left relative overflow-hidden group">

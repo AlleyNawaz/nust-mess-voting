@@ -26,12 +26,8 @@ export async function submitVotes(payload: SubmissionPayload) {
     const email = payload.user.email.toLowerCase();
     const isStudent = email.endsWith("@student.nust.edu.pk");
     const isOfficial = email.endsWith("@nust.edu.pk");
-    // Explicitly reject purely departmental domains unless they are subdomains of nust.edu.pk (logic handled by endsWith)
-    // But reject "seecs.edu.pk" (without nust) or other variants if any.
-    // However, the rule "Do NOT accept department-based emails like @seecs.edu.pk" means specifically block that.
-
-    // Valid: "ali@student.nust.edu.pk", "staff@nust.edu.pk"
-    // Invalid: "ali@seecs.edu.pk"
+    // Accept official NUST emails, strictly reject prohibited ones like pure department domains if not ending in nust.edu.pk (already covered)
+    // AND explicitly reject @seecs.edu.pk as requested interactively.
     const isValid = (isStudent || isOfficial) && !email.includes("@seecs.edu.pk");
 
     if (!isValid) {
@@ -45,25 +41,39 @@ export async function submitVotes(payload: SubmissionPayload) {
 
 
     try {
+        console.log("Submitting to Script URL:", SCRIPT_URL); // Debug log
+
+        // Using explicit fetch options for robustness
         const response = await fetch(SCRIPT_URL, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
+            // Explicitly verify redirect behavior for GAS
+            redirect: "follow",
             body: JSON.stringify(payload),
         });
 
+        // Check HTTP status first
+        if (!response.ok) {
+            console.error("HTTP Error:", response.status, response.statusText);
+            throw new Error(`HTTP Error: ${response.status}`);
+        }
+
         const result = await response.json();
 
+        // Check Logical Status from Script
         if (result.status === "success") {
             return { success: true };
         } else {
-            console.error("Script Error:", result.message);
+            console.error("Script Logic Error:", result.message);
+            // Return logic error if safe (e.g. duplicate), otherwise generic
+            // Assuming result.message is safe as per our script
             return { success: false, message: result.message || "Submission service is temporarily unavailable. Please try again later." };
         }
 
     } catch (error) {
-        console.error("Network/Submission Error:", error);
+        console.error("Network/Submission Critical Error:", error);
         return { success: false, message: "Submission service is temporarily unavailable. Please try again later." };
     }
 }
